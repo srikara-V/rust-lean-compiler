@@ -1,3 +1,4 @@
+pub mod builtins;
 pub mod core;
 pub mod elab;
 pub mod error;

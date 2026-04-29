@@ -11,7 +11,13 @@ pub enum TokenKind {
     Def,
     Eval,
     Fun,
+    Let,
+    In,
+    Match,
+    With,
     Type,
+    Nat,
+    Number(u64),
     Ident(String),
     LParen,
     RParen,
@@ -19,6 +25,9 @@ pub enum TokenKind {
     Assign,
     Arrow,
     FatArrow,
+    Plus,
+    Pipe,
+    Semicolon,
     Eof,
 }
 
@@ -53,6 +62,18 @@ pub fn lex(input: &str) -> Result<Vec<Token>> {
                 i += 1;
                 TokenKind::RParen
             }
+            '+' => {
+                i += 1;
+                TokenKind::Plus
+            }
+            '|' => {
+                i += 1;
+                TokenKind::Pipe
+            }
+            ';' => {
+                i += 1;
+                TokenKind::Semicolon
+            }
             ':' if chars.get(i + 1) == Some(&'=') => {
                 i += 2;
                 TokenKind::Assign
@@ -85,6 +106,17 @@ pub fn lex(input: &str) -> Result<Vec<Token>> {
                     }
                 }
             }
+            c if c.is_ascii_digit() => {
+                i += 1;
+                while i < chars.len() && chars[i].is_ascii_digit() {
+                    i += 1;
+                }
+                let digits: String = chars[pos..i].iter().collect();
+                let value = digits
+                    .parse()
+                    .map_err(|_| CompileError::new(format!("invalid number {digits} at {pos}")))?;
+                TokenKind::Number(value)
+            }
             c if is_ident_start(c) => {
                 i += 1;
                 while i < chars.len() && is_ident_continue(chars[i]) {
@@ -94,7 +126,12 @@ pub fn lex(input: &str) -> Result<Vec<Token>> {
                 match word.as_str() {
                     "def" => TokenKind::Def,
                     "fun" => TokenKind::Fun,
+                    "let" => TokenKind::Let,
+                    "in" => TokenKind::In,
+                    "match" => TokenKind::Match,
+                    "with" => TokenKind::With,
                     "Type" => TokenKind::Type,
+                    "Nat" => TokenKind::Nat,
                     _ => TokenKind::Ident(word),
                 }
             }
@@ -134,5 +171,14 @@ mod tests {
         assert_eq!(tokens[1].kind, TokenKind::Ident("id".to_string()));
         assert!(matches!(tokens[3].kind, TokenKind::Type));
         assert!(matches!(tokens[4].kind, TokenKind::Assign));
+    }
+
+    #[test]
+    fn lexes_nat_literals_and_let() {
+        let tokens = lex("let x : Nat := 1 + 2; x").unwrap();
+        assert!(matches!(tokens[0].kind, TokenKind::Let));
+        assert!(matches!(tokens[3].kind, TokenKind::Nat));
+        assert_eq!(tokens[5].kind, TokenKind::Number(1));
+        assert!(matches!(tokens[6].kind, TokenKind::Plus));
     }
 }
