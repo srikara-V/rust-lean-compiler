@@ -2,5 +2,7 @@
 name = "rust-lean-compiler"
 version = "0.1.0"
 edition = "2021"
+description = "A tiny Lean 4-like surface language compiler in Rust"
+license = "MIT"
 
 [dependencies]
