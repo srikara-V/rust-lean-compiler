@@ -14,10 +14,12 @@ pub struct Session {
 }
 
 impl Session {
+    /// Create a session with builtin definitions loaded.
     pub fn new() -> Self {
         Self { env: initial_env() }
     }
 
+    /// Parse, elaborate, typecheck, and evaluate commands from source text.
     pub fn run_source(&mut self, source: &str) -> Result<Vec<String>> {
         let commands = parse(source)?;
         let mut output = Vec::new();
