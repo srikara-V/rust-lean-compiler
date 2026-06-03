@@ -20,6 +20,13 @@ flowchart TD
 cargo run -- examples/basic.lean
 cargo run -- examples/programming.lean
 cargo run -- --expr "#eval id Type Type"
+cargo run -- --help
+```
+
+## Test
+
+```sh
+cargo test
 ```
 
 ## Supported Syntax
