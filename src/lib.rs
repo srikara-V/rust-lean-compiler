@@ -9,3 +9,4 @@ pub mod surface;
 pub mod typeck;
 
 pub use elab::Session;
+pub use error::CompileError;
