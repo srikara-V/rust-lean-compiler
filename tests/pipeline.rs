@@ -139,6 +139,16 @@ def const : (A : Type) -> (B : Type) -> A -> B -> A := fun A : Type => fun B : T
 }
 
 #[test]
+fn evaluates_let_with_in_keyword() {
+    let mut session = Session::new();
+    let output = session
+        .run_source("#eval let x : Nat := 5 in x + 1")
+        .unwrap();
+
+    assert_eq!(output, vec!["6"]);
+}
+
+#[test]
 fn evaluates_option_none_branch() {
     let mut session = Session::new();
     let output = session
