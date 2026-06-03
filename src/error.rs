@@ -22,3 +22,14 @@ impl fmt::Display for CompileError {
 impl std::error::Error for CompileError {}
 
 pub type Result<T> = std::result::Result<T, CompileError>;
+
+#[cfg(test)]
+mod tests {
+    use super::CompileError;
+
+    #[test]
+    fn display_shows_message() {
+        let err = CompileError::new("type mismatch");
+        assert_eq!(err.to_string(), "type mismatch");
+    }
+}
