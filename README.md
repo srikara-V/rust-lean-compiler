@@ -19,6 +19,7 @@ flowchart TD
 ```sh
 cargo run -- examples/basic.lean
 cargo run -- examples/programming.lean
+cargo run -- examples/recursion.lean
 cargo run -- --expr "#eval id Type Type"
 cargo run -- --help
 ```
