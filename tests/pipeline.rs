@@ -138,6 +138,44 @@ def const : (A : Type) -> (B : Type) -> A -> B -> A := fun A : Type => fun B : T
     assert_eq!(output, vec!["Type"]);
 }
 
+#[test]
+fn evaluates_option_none_branch() {
+    let mut session = Session::new();
+    let output = session
+        .run_source("#eval match none Nat with | none => 0 | some n => n")
+        .unwrap();
+
+    assert_eq!(output, vec!["0"]);
+}
+
+#[test]
+fn evaluates_empty_list_length() {
+    let mut session = Session::new();
+    let output = session
+        .run_source("#eval match nil Nat with | nil => 0 | cons x rest => 1")
+        .unwrap();
+
+    assert_eq!(output, vec!["0"]);
+}
+
+#[test]
+fn evaluates_recursion_example() {
+    let mut session = Session::new();
+    let output = session
+        .run_source(
+            r#"
+def repeatAdd : Nat -> Nat -> Nat := fun n : Nat => fun acc : Nat => match n with | zero => acc | succ k => repeatAdd k (acc + n)
+
+#eval repeatAdd 4 0
+"#,
+        )
+        .unwrap();
+
+    assert_eq!(output, vec!["10"]);
+}
+
+#[test]
+fn rejects_non_structural_recursion() {
     let mut session = Session::new();
     let error = session
         .run_source("def loop : Nat -> Nat := fun n : Nat => loop n")
