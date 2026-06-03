@@ -10,3 +10,4 @@ pub mod typeck;
 
 pub use elab::Session;
 pub use error::CompileError;
+pub use error::Result;
