@@ -98,7 +98,46 @@ fn rejects_incomplete_bool_match() {
 }
 
 #[test]
-fn rejects_non_structural_recursion() {
+fn rejects_duplicate_definitions() {
+    let mut session = Session::new();
+    let error = session
+        .run_source(
+            r#"
+def x : Nat := 1
+def x : Nat := 2
+"#,
+        )
+        .unwrap_err();
+
+    assert!(error.message.contains("duplicate definition"));
+}
+
+#[test]
+fn rejects_builtin_redefinition() {
+    let mut session = Session::new();
+    let error = session
+        .run_source("def Bool : Type := Type")
+        .unwrap_err();
+
+    assert!(error.message.contains("cannot redefine builtin"));
+}
+
+#[test]
+fn evaluates_const_combinator() {
+    let mut session = Session::new();
+    let output = session
+        .run_source(
+            r#"
+def const : (A : Type) -> (B : Type) -> A -> B -> A := fun A : Type => fun B : Type => fun x : A => fun y : B => x
+
+#eval const Type Type Type Type
+"#,
+        )
+        .unwrap();
+
+    assert_eq!(output, vec!["Type"]);
+}
+
     let mut session = Session::new();
     let error = session
         .run_source("def loop : Nat -> Nat := fun n : Nat => loop n")
