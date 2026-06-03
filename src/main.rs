@@ -19,14 +19,28 @@ fn main() -> ExitCode {
     }
 }
 
+const USAGE: &str = "\
+rust-lean-compiler — evaluate Lean-like source files
+
+Usage:
+  rust-lean-compiler <file.lean>
+  rust-lean-compiler --expr <source>
+  rust-lean-compiler --help
+
+Examples:
+  rust-lean-compiler examples/basic.lean
+  rust-lean-compiler --expr \"#eval 1 + 1\"";
+
 fn run() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let mut args = env::args().skip(1);
     let source = match args.next().as_deref() {
+        Some("--help" | "-h") => {
+            println!("{USAGE}");
+            return Ok(Vec::new());
+        }
         Some("--expr") => args.next().ok_or("missing source after --expr")?,
         Some(path) => fs::read_to_string(path)?,
-        None => {
-            return Err("usage: rust-lean-compiler <file.lean> | --expr <source>".into());
-        }
+        None => return Err(USAGE.into()),
     };
 
     let mut session = Session::new();
