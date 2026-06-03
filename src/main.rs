@@ -26,6 +26,7 @@ Usage:
   rust-lean-compiler <file.lean>
   rust-lean-compiler --expr <source>
   rust-lean-compiler --help
+  rust-lean-compiler --version
 
 Examples:
   rust-lean-compiler examples/basic.lean
@@ -36,6 +37,10 @@ fn run() -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let source = match args.next().as_deref() {
         Some("--help" | "-h") => {
             println!("{USAGE}");
+            return Ok(Vec::new());
+        }
+        Some("--version" | "-V") => {
+            println!("rust-lean-compiler {}", env!("CARGO_PKG_VERSION"));
             return Ok(Vec::new());
         }
         Some("--expr") => args.next().ok_or("missing source after --expr")?,
